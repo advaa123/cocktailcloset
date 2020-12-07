@@ -31,7 +31,7 @@
         {% else %}
         <div class="tab-pane fade" id="{{ brand.name }}-md" role="tabpanel" aria-labelledby="{{ brand.name }}-tab-md">
             {% endif %}
-            <div class="row row-cols-4 wow fadeIn">
+            <div class="row wow fadeIn">
                 {% for cocktail in cocktails(brand) %}
                 <div class="col-lg-4 col-md-6 mb-4 wow fadeIn">
                     <div class="card">
