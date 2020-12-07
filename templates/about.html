@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+
+<h4><strong><a href="/cocktails"><button class="btn btn-light">Cocktails</button></a> <a href="/"><button
+        class="btn btn-light">Popular Drinks</button></a></strong></h4>
+<hr class="my-5">
+
+<div class="container">
+  <div class="card">
+    <ul class="list-group">
+      <li class="list-group-item">
+        <strong>Sources</strong>
+      </li>
+      <li class="list-group-item">
+        <a href="https://www.esquire.com/food-drink/drinks/a30246954/best-alcohol-bottles-2019/" target="_blank">Best Alcohol Bottles 2019</a>
+      </li>
+        <li class="list-group-item">
+          <a href="https://www.thecocktaildb.com/" target="_blank">The Cocktail DB</a>
+      </li>
+      </ul>
+  </div>
+</div>
+{% endblock %}

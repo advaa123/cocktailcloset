@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<h4><strong><button type="button" class="btn purple-gradient">Cocktails</button> <a href="/"><button
+                class="btn btn-light">Popular Drinks</button></a></strong></h4>
+<hr class="my-5">
+
+<ul class="nav nav-tabs" id="myTabMD" role="tablist">
+    {% for brand in brands %}
+    <li class="nav-item">
+        {% if brand == current_brand %}
+        <a class="nav-link active" id="{{ brand.name }}-tab-md" data-toggle="tab" href="#{{ brand.name }}-md" role="tab"
+            aria-controls="{{ brand.name }}-md" aria-selected="true"><span
+                class="badge badge-{{ colors[loop.index - 1] }}">{{ brand.name }}</a></span>
+        {% else %}
+        <a class="nav-link" id="{{ brand.name }}-tab-md" data-toggle="tab" href="#{{ brand.name }}-md" role="tab"
+            aria-controls="{{ brand.name }}-md" aria-selected="false"><span
+                class="badge badge-{{ colors[loop.index - 1] }}">{{ brand.name }}</span></a>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+<div class="tab-content pt-5" id="myTabContentMD">
+    {% for brand in brands %}
+    {% if brand == current_brand %}
+    <div class="tab-pane fade show active" id="{{ brand.name }}-md" role="tabpanel"
+        aria-labelledby="{{ brand.name }}-tab-md">
+        {% else %}
+        <div class="tab-pane fade" id="{{ brand.name }}-md" role="tabpanel" aria-labelledby="{{ brand.name }}-tab-md">
+            {% endif %}
+            <div class="row row-cols-4 wow fadeIn">
+                {% for cocktail in cocktails(brand) %}
+                <div class="col-lg-4 col-md-6 mb-4 wow fadeIn">
+                    <div class="card">
+                        <div class="view overlay">
+                            <img src="{{ cocktail.cocktail.img }}" class="card-img-top" alt="">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"><a class="text-black-50"
+                                    href="/cocktail/{{ cocktail.cocktail.id }}">{{ cocktail.cocktail.name }}</a>
+                            </h5>
+                            <p><a class="text-black-50" href="#">
+                                    {% for f in func(cocktail.cocktail) %}
+                                    <a href="/cocktails/{{ f.brand.id }}" class="badge badge-light"
+                                        {% if loop.length > 1 %} style="margin-right: 5px;"
+                                        {% endif %}>{{ f.brand.name }}</a>
+                                    {% endfor %}
+                                </a></p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

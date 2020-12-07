@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+
+<h4><strong><a href="/cocktails"><button class="btn btn-light">Cocktails</button></a> <a href="/"><button
+                class="btn btn-light">Popular Drinks</button></a></strong></h4>
+<hr class="my-5">
+<div class="row row-cols-2 wow fadeIn">
+    <div class="col-lg-4 col-md-6 mb-4 wow fadeIn">
+        <div>
+            <div class="view overlay">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/1024px-User_icon_2.svg.png" class="card-img-top" style="padding-right: 2rem;" alt="">
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 col-md-6 mb-4 wow fadeIn">
+        <div class="card">
+            <div class="card-body">
+                <p>
+                    <table class="table">
+                        <tr>
+                            <td style="border-top: 0"><strong>Username</strong></th>
+                            <td style="border-top: 0">{{ current_user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th><strong>Full Name</strong></th>
+                            <td>{{ current_user.full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th><strong>Email</strong></th>
+                            <td>{{ current_user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th><strong>Closet</strong></th>
+                            <td><a href="/cart">{{ cart }}</a></td>
+                        </tr>
+                    </table>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="row row-cols-2 wow fadeIn">
+    <div class="col wow fadeIn">
+        <div class="card">
+            <div class="card-body">
+
+                <table class="table">
+                    <tr>
+                        <td style="border-top: 0">Username</th>
+                        <td style="border-top: 0">{{ current_user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Full Name</th>
+                        <td>{{ current_user.full_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ current_user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Closet</th>
+                        <td><a href="/cart">{{ cart }}</a></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div> -->
+{% endblock %}

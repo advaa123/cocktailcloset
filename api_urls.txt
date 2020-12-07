@@ -1,0 +1,6 @@
+https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Gin
+https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=vodka
+https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=rum
+https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Tequila
+https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Scotch
+https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita

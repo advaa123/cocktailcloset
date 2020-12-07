@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+
+<h4><strong><a href="/cocktails"><button class="btn btn-light">Cocktails</button></a> <a href="/"><button
+  class="btn btn-light">Popular Drinks</button></a></strong></h4>
+  <hr class="my-5">
+
+  <div class="container">
+    <div class="card">
+<table id="dt-all-checkbox" class="table" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th>
+        <div class="custom-control custom-checkbox">
+          <input name="drink_item" class="custom-control-input" type="checkbox" id="selectall"
+            value="" onclick="toggle(this);">
+          <label class="custom-control-label" for="selectall"></label></div>
+        </th>
+      <th class="th-sm">Item
+      </th>
+      <th class="th-sm">Price
+      </th>
+    </tr>
+  </thead>
+  <form method="POST" action="/cart">
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>
+          <div class="custom-control custom-checkbox">
+            <input name="drink_item" class="custom-control-input" type="checkbox" id="inlineCheckbox{{ item.id }}"
+              value="{{ item.id }}">
+            <label class="custom-control-label" for="inlineCheckbox{{ item.id }}"></label></div>
+        </td>
+        <td>{{ item.drink.name }}</td>
+        <td>{{ item.drink.price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td><input type="submit" value="Delete"></td>
+        <td>Total</td>
+        <td>{{ total }}</td>
+      </tr>
+    </tfoot>
+  </form>
+</table>
+</div></div>
+
+
+<script>
+  function toggle(source) {
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i] != source)
+            checkboxes[i].checked = source.checked;
+    }
+}
+</script>
+{% endblock %}

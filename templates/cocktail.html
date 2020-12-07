@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<h4><strong><a href="/cocktails"><button class="btn btn-light">Cocktails</button></a> <a href="/"><button
+                class="btn btn-light">Popular Drinks</button></a></strong></h4>
+<hr class="my-5">
+<div class="row row-cols-2 wow fadeIn">
+    <div class="col-lg-4 col-md-6 mb-4 wow fadeIn">
+        <div class="card">
+            <div class="view overlay">
+                <img src="{{ cocktail['strDrinkThumb'] }}" class="card-img-top" alt="">
+            </div>
+            <div class="card-body">
+                <h5 class="card-title text-black-50">{{ cocktail['strDrink'] }}</h5>
+                <p>{{ cocktail['strInstructions'] }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 col-md-6 mb-4 wow fadeIn">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-black-50">Ingredients
+                </h5>
+                <p>
+                <table class="table">
+                    {% for i in ingredients %}
+                    <tr>
+                        <th>{{ i[0] }}</td>
+                        <td>{{ i[1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
