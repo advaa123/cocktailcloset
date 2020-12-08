@@ -141,11 +141,11 @@ def register():
     return redirect(url_for('main'))
 
 
-@app.route("/add/<drink>", methods=['GET', 'POST'])
+@app.route("/add/<int:drink>", methods=['GET', 'POST'])
 # @login_required
 def add_to_cart(drink):
     if current_user.is_authenticated:
-        drink = Drink.get_or_none(Drink.id == int(drink))
+        drink = Drink.get_or_none(Drink.id == drink)
         if drink is not None:
             my_system.add_to_cart(current_user, drink)
             Cart.create(user=current_user.id, drink=drink)
@@ -159,9 +159,9 @@ def add_to_cart(drink):
                         )
 
 
-@app.route("/cocktails/<brand>", methods=['GET', 'POST'])
+@app.route("/cocktails/<int:brand>", methods=['GET', 'POST'])
 def cocktails(brand):
-    brand = Brand.get_or_none(Brand.id == int(brand))
+    brand = Brand.get_or_none(Brand.id == brand)
     if brand is not None:
         return render_template('cocktails.html',
                             cocktails=my_system.get_cocktails,
@@ -178,9 +178,9 @@ def cocktails_main():
     return redirect("/cocktails/1")
 
 
-@app.route("/cocktail/<cocktail_id>", methods=['GET', 'POST'])
+@app.route("/cocktail/<int:cocktail_id>", methods=['GET', 'POST'])
 def cocktail_details(cocktail_id):
-    cocktail = Cocktail.get_or_none(Cocktail.id == int(cocktail_id))
+    cocktail = Cocktail.get_or_none(Cocktail.id == cocktail_id)
     if cocktail is not None:
         full_dict = my_system.cocktail_ingredients(cocktail.api_id)
         ingredients_list = []
@@ -203,6 +203,21 @@ def cocktail_details(cocktail_id):
 @login_required
 def logout():
     logout_user()
+    return redirect(url_for('main'))
+
+
+@app.route("/admin", methods=['POST', 'GET'])
+@login_required
+def admin():
+    if current_user.is_authenticated and current_user.username == 'Admin2':
+        users = User.select()
+        if request.form.getlist('user_item'):
+            checked_users = list(map(int, request.form.getlist('user_item')))
+            for user in checked_users:
+                member = User.get_or_none(User.id == user)
+                if member is not None:
+                    member.delete_instance()
+        return render_template('admin_users.html', users=users)
     return redirect(url_for('main'))
 
 

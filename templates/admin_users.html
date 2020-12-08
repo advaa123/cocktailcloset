@@ -1,0 +1,73 @@
+{% extends "admin.html" %}
+{% block title %}{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block panel %}
+<table id="dt-all-checkbox" class="table" cellspacing="0" width="100%" style="table-layout: fixed; word-wrap: break-word">
+    <thead>
+      <tr>
+        <th class="th-sm" colspan="1" style="width: 1em;">
+          <div class="custom-control custom-checkbox">
+            <input name="user_item" class="custom-control-input" type="checkbox" id="selectall"
+              value="" onclick="toggle(this);">
+            <label class="custom-control-label" for="selectall"></label></div>
+          </th>
+          <th class="th-sm" colspan="1" style="width: 15%">id
+        </th>
+        <th class="th-sm">Username
+        </th>
+        <th class="th-sm">Full Name
+        </th>
+        <!-- <th class="th-sm">
+            Password
+        </th> -->
+        <th class="th-sm">Email
+        </th>
+        <!-- <th></th> -->
+      </tr>
+    </thead>
+    <form method="POST" action="/admin">
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>
+            {% if user != current_user %}
+            <div class="custom-control custom-checkbox">
+              <input name="user_item" class="custom-control-input" type="checkbox" id="inlineCheckbox{{ user.id }}"
+                value="{{ user.id }}">
+              <label class="custom-control-label" for="inlineCheckbox{{ user.id }}"></label></div>
+              {% endif %}
+          </td>
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.full_name }}</td>
+          <!-- <td><input id="password" type="password" class="form-control" value="****" onfocus="this.value=''" disabled></td> -->
+          <td>{{ user.email }}</td>
+          <!-- <td><button type="edit" class="btn btn-default" id="edit" onclick="return handleEdit()">&#9998;</button></td> -->
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td><input type="submit" value="Delete"></td>
+          <td colspan="4"></td>
+        </tr>
+      </tfoot>
+    </form>
+  </table>
+
+  <!-- <script>
+    function handleEdit() {
+    // document.getElementById('username').disabled = false;
+    // document.getElementById('full_name').disabled = false;
+    document.getElementById('password').disabled = false;
+    // document.getElementById('email').hidden = false;
+    document.getElementById('edit').hidden = true;
+    
+    return false;
+    }
+  </script> -->
+
+
+{% endblock %}

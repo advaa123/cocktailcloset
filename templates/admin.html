@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+
+<h4><strong><a href="/cocktails"><button class="btn btn-light">Cocktails</button></a> <a href="/"><button
+                class="btn btn-light">Popular Drinks</button></a></strong></h4>
+<hr class="my-5">
+<div class="row wow fadeIn">
+    <div class="col-lg-4 col-md-6 mb-4 wow fadeIn">
+        <div>
+            <div class="view overlay">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="#">Show Users</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="#">Show Drinks</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="#">Show Cocktails</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 col-md-6 mb-4 wow fadeIn">
+        <div class="card">
+            <div class="card-body">
+                <p id="panel">
+                    {% block panel %}{% endblock %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggle(source) {
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      for (var i = 0; i < checkboxes.length; i++) {
+          if (checkboxes[i] != source)
+              checkboxes[i].checked = source.checked;
+      }
+  }
+  </script>
+
+{% endblock %}
