@@ -12,19 +12,19 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 login_manager.session_protection = 'strong'
-app.secret_key = s_key
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 my_system = MySystem()
 
 
-# @app.before_request
-# def _db_connect():
-#     db.connect()
+@app.before_request
+def _db_connect():
+    db.connect()
 
 
-# @app.teardown_request
-# def _db_close(_):
-#     if not db.is_closed():
-#         db.close()
+@app.teardown_request
+def _db_close(_):
+    if not db.is_closed():
+        db.close()
 
 
 @login_manager.user_loader
