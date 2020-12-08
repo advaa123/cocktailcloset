@@ -1,10 +1,22 @@
+import os
+import time
+
 from flask_login import UserMixin
-from peewee import *
-from .basic import get_popular_drinks, get_cocktails, get_cocktail_ingredients
-from werkzeug.security import generate_password_hash, check_password_hash
+from peewee import (CharField, ForeignKeyField, IntegerField, Model,
+                    SqliteDatabase)
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from .basic import get_cocktail_ingredients, get_cocktails, get_popular_drinks
 
 
 db = SqliteDatabase('mydb7.db')
+s_key = os.urandom(24)
+badge_colors = ['default', 'primary', 'secondary', 'warning', 'info']
+
+
+def log(error):
+    with open('log.txt', 'a') as file:
+        file.write(f'{time.ctime()} - {error}\n')
 
 
 class BaseModel(Model):
@@ -17,7 +29,8 @@ class User(UserMixin, BaseModel):
     full_name = CharField()
     password = CharField()
     email = CharField()
-    
+
+
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
@@ -73,7 +86,7 @@ class Cart(BaseModel):
     drink = ForeignKeyField(Drink, backref='cart')
 
 
-class UserSystem:
+class MySystem:
     def add_user(self, username, full_name, password, email):
         try:
             User.create(
@@ -83,7 +96,7 @@ class UserSystem:
                 email=email
             )
         except Exception as e:
-            print(e)
+            log(e)
             return False
         else:
             return True
@@ -93,10 +106,13 @@ class UserSystem:
         try:
             user = User.get(User.username == username)
             user.delete_instance()
-        except Exception:
-            print(f"Couldn't delete '{username}'.")
+        except Exception as e:
+            # print(f"Couldn't delete '{username}'.")
+            log(e)
+            return False
         else:
-            print(f"User {username} has been deleted.")
+            # print(f"User {username} has been deleted.")
+            return True
 
 
     def select_users(self):
@@ -121,22 +137,23 @@ class UserSystem:
                 brand=brand
             )
         except Exception as e:
-            print(e)
+            log(e)
             return False
         else:
             return True
 
 
     def remove_drink(self, drink):
-        name = drink.name
         try:
             drink.delete_instance()
         except Exception as e:
-            print(e)
+            log(e)
+            return False
         else:
-            print(f"The drink '{name}' has been deleted.")
-
-
+            # print(f"The drink '{name}' has been deleted.")
+            return True
+    
+    
     # def add_cocktail(self, name, price, img):
     #     try:
     #         Cocktail.create(
@@ -149,57 +166,60 @@ class UserSystem:
     #         return True
 
 
-    def remove_cocktail(self, name):
-        cocktail = Cocktail.get(Cocktail.name == name)
-        try:
-            cocktail.delete_instance()
-        except Exception as e:
-            print(e)
-        else:
-            print(f"Cocktail '{name}' has been deleted.")
+    # def remove_cocktail(self, name):
+    #     cocktail = Cocktail.get(Cocktail.name == name)
+    #     try:
+    #         cocktail.delete_instance()
+    #     except Exception as e:
+    #         print(e)
+    #     else:
+    #         print(f"Cocktail '{name}' has been deleted.")
 
 
     def add_to_cart(self, user, drink):
         try:
             Cart.create(user=user, drink=drink)
         except Exception as e:
-            return e
+            log(e)
+            return False
         else:
-            return f"{drink.name} has been added to {user.username}'s cart."
+            # return f"{drink.name} has been added to {user.username}'s cart."
+            return True
 
 
     def remove_from_cart(self, cart, drink):
-        cart = Cart.get(Cart.drink == drink)
-        try:
+        cart = Cart.get_or_none(Cart.drink == drink)
+        if cart is not None:
             cart.delete_instance()
-        except Exception as e:
-            print(e)
-        else:
-            print(f"{drink.name} has been removed from {cart.user.username}'s cart.")
+            return True
+        return False
 
 
     def select_user_cart(self, user):
         try:
             return user.cart
         except Exception as e:
-            return e
+            log(e)
+            return False
 
 
-    def select_all_carts(self):
-        for c in Cart.select():
-            print(c.id, c.user.id, c.drink.id)
+    # def select_all_carts(self):
+    #     for c in Cart.select():
+    #         print(c.id, c.user.id, c.drink.id)
 
 
-    def login(self, username, password):
-        try:
-            user = User.get(User.username == username)
-        except Exception:
-            print(f"User '{username}' does not exist.")
-        else:
-            if user.check_password(password):
-                print("Logged in successfully.")
-            else:
-                print("Wrong password, try again.")
+    # def login(self, username, password):
+    #     try:
+    #         user = User.get(User.username == username)
+    #     except Exception as e:
+    #         # print(f"User '{username}' does not exist.")
+    #         return False
+    #     else:
+    #         if user.check_password(password):
+    #             # print("Logged in successfully.")
+    #             return True
+    #         else:
+    #             print("Wrong password, try again.")
 
 
     def create_brands(self):
@@ -229,8 +249,8 @@ class UserSystem:
             Cocktail.insert_many(fitted_list, fields=fields).on_conflict_replace().execute()
 
 
-    def get_cocktails_list(self):
-        return Cocktail.select()
+    # def get_cocktails_list(self):
+    #     return Cocktail.select()
     
 
     def cocktails_by_brand(self):
@@ -244,30 +264,28 @@ class UserSystem:
         CocktailByBrand.insert_many(cbb_list, fields=fields).execute()
     
 
-    def get_cocktails_by_brand(self):
-        return CocktailByBrand.select()
+    # def get_cocktails_by_brand(self):
+    #     return CocktailByBrand.select()
 
 
     def cocktail_ingredients(self, api_id):
         ingredients_dict = get_cocktail_ingredients(api_id)
         updated_dict = {}
+
         for k, v in ingredients_dict.items():
             if v is not None:
                 updated_dict[k] = v
         
         return updated_dict
+    
 
-# https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Gin
-# https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=vodka
-# https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=rum
-# https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Tequila
-# https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Scotch
+    def get_brands(self, cocktail):
+        return CocktailByBrand.select(CocktailByBrand.brand).where(CocktailByBrand.cocktail == cocktail)
 
 
-    # name = CharField(unique=True)
-    # price = CharField()
-    # img = CharField()
-    # brand = ForeignKeyField(Brand, backref='drinks')
+    def get_cocktails(self, brand):
+        return CocktailByBrand.select(CocktailByBrand.cocktail).where(CocktailByBrand.brand == brand)
+
 
 # if __name__ == '__main__':
 #     db.connect()
@@ -288,7 +306,7 @@ class UserSystem:
     # for cocktail in us.get_cocktails_list():
     #      print(cocktail.id, cocktail.name, cocktail.api_id)
     
-    # us.cocktails_by_brand()
+    # us._cocktails_by_brand()
     # for c in us.get_cocktails_by_brand():
     #     print(c.brand.name, c.cocktail.name)
 

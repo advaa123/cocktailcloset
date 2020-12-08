@@ -35,7 +35,7 @@
                         </tr>
                         <tr>
                             <th><strong>Closet</strong></th>
-                            <td><a href="/cart">{{ cart }}</a></td>
+                            <td><a href="/cart" class="text-default">{{ current_user.cart|length }}</a></td>
                         </tr>
                     </table>
                 </p>
@@ -43,32 +43,4 @@
         </div>
     </div>
 </div>
-
-<!-- <div class="row row-cols-2 wow fadeIn">
-    <div class="col wow fadeIn">
-        <div class="card">
-            <div class="card-body">
-
-                <table class="table">
-                    <tr>
-                        <td style="border-top: 0">Username</th>
-                        <td style="border-top: 0">{{ current_user.username }}</td>
-                    </tr>
-                    <tr>
-                        <th>Full Name</th>
-                        <td>{{ current_user.full_name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Email</th>
-                        <td>{{ current_user.email }}</td>
-                    </tr>
-                    <tr>
-                        <th>Closet</th>
-                        <td><a href="/cart">{{ cart }}</a></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
-</div> -->
 {% endblock %}

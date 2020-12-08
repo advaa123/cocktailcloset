@@ -1,21 +1,30 @@
-from flask import Flask, render_template, request, redirect
-from flask_login import current_user, login_required, login_user, logout_user, LoginManager, AnonymousUserMixin, confirm_login
-import jinja2
-from models.models import User, Brand, Drink, Cart, Cocktail, CocktailByBrand, UserSystem
 import requests
-# from models.basic import get_popular_drinks, select_all
+from flask import Flask, redirect, render_template, request, url_for
+from flask_login import (AnonymousUserMixin, LoginManager, confirm_login,
+                         current_user, login_required, login_user, logout_user)
 
+from models.models import (Brand, Cart, Cocktail, CocktailByBrand, Drink,
+                           MySystem, User, badge_colors, db, s_key)
 
 app = Flask(__name__)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 login_manager.session_protection = 'strong'
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-# app.debug = True
-# app.config['DEBUG'] = True
-user_system = UserSystem()
-badge_colors = ['default', 'primary', 'secondary', 'warning', 'info']
+app.secret_key = s_key
+my_system = MySystem()
+
+
+@app.before_request
+def _db_connect():
+    db.connect()
+
+
+@app.teardown_request
+def _db_close(_):
+    if not db.is_closed():
+        db.close()
 
 
 @login_manager.user_loader
@@ -24,55 +33,49 @@ def load_user(user_id):
 
 
 @app.route("/", methods=['GET', 'POST'])
-def main():
-    if current_user.is_authenticated:
-        return render_template('index.html',
-                                drinks=user_system.select_drinks(),
-                                brands=user_system.select_brands(),
-                                cart=len(current_user.cart),
-                                colors=badge_colors)
-    
+def main():    
     return render_template('index.html',
-                            drinks=user_system.select_drinks(),
-                            brands=user_system.select_brands(),
+                            drinks=my_system.select_drinks(),
+                            brands=my_system.select_brands(),
                             colors=badge_colors)
 
 
 @app.route("/about")
 def about():
-    if current_user.is_authenticated:
-        return render_template('about.html', cart=len(current_user.cart))
     return render_template('about.html')
 
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-   if not current_user.is_authenticated:
+    if not current_user.is_authenticated:
         username = request.form.get('username')
         password = request.form.get('password')
         user = User.get_or_none(username=username)
-        
+
         if user is not None and user.check_password(password):
             login_user(user)
             return render_template('index.html',
-                                drinks=user_system.select_drinks(),
-                                brands=user_system.select_brands(),
-                                cart=len(current_user.cart),
+                                drinks=my_system.select_drinks(),
+                                brands=my_system.select_brands(),
                                 colors=badge_colors)
                                 
         return render_template('index.html',
-                            drinks=user_system.select_drinks(),
-                            brands=user_system.select_brands(),
+                            drinks=my_system.select_drinks(),
+                            brands=my_system.select_brands(),
                             colors=badge_colors,
                             error="Incorrect username or password"
                             )
 
-        return render_template('index.html', drinks=user_system.select_drinks(), brands=user_system.select_brands(), colors=badge_colors)
+    return render_template('index.html',
+                            drinks=my_system.select_drinks(),
+                            brands=my_system.select_brands(),
+                            colors=badge_colors
+                            )
 
 
 @app.route("/cart", methods=['GET', 'POST'])
 @login_required
-def go_to_cart():
+def show_cart():
     if request.method == "POST":
         if request.form.getlist('drink_item'):
             checked_items = list(map(int, request.form.getlist('drink_item')))
@@ -81,7 +84,7 @@ def go_to_cart():
                 if cart is not None:
                     cart.delete_instance()
 
-    items = user_system.select_user_cart(current_user)
+    items = my_system.select_user_cart(current_user)
     total = 0
     split_price = []
 
@@ -98,7 +101,6 @@ def go_to_cart():
         total_str = f'${total}'
 
     return render_template('cart.html',
-                            cart=len(current_user.cart),
                             items=items,
                             total=total_str
     )
@@ -107,9 +109,7 @@ def go_to_cart():
 @app.route("/profile")
 @login_required
 def profile():
-    return render_template('profile.html',
-                            user=current_user,
-                            cart=len(current_user.cart))
+    return render_template('profile.html')
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -139,10 +139,10 @@ def register():
         if len(errors) > 0:
             return render_template('register.html', errors=errors)
 
-        user_system.add_user(username, full_name, password, email)
-
+        my_system.add_user(username, full_name, password, email)
         login_user(User.get(User.username == username), force=True)
-        return redirect('/')
+        return redirect(url_for('main'))
+    
     return render_template('register.html')
 
 
@@ -152,47 +152,30 @@ def add_to_cart(drink):
     if current_user.is_authenticated:
         drink = Drink.get_or_none(Drink.id == int(drink))
         if drink is not None:
-            user_system.add_to_cart(current_user, drink)
+            my_system.add_to_cart(current_user, drink)
             Cart.create(user=current_user.id, drink=drink)
-        return redirect('/')
+        return redirect(url_for('main'))
 
     return render_template('index.html',
-                        drinks=user_system.select_drinks(),
-                        brands=user_system.select_brands(),
+                        drinks=my_system.select_drinks(),
+                        brands=my_system.select_brands(),
                         colors=badge_colors,
                         error="You need to sign in to perform this action"
                         )
-
-
-def get_brands(cocktail):
-    return CocktailByBrand.select(CocktailByBrand.brand).where(CocktailByBrand.cocktail == cocktail)
-
-
-def get_cocktails(brand):
-    return CocktailByBrand.select(CocktailByBrand.cocktail).where(CocktailByBrand.brand == brand)
 
 
 @app.route("/cocktails/<brand>", methods=['GET', 'POST'])
 def cocktails(brand):
     brand = Brand.get_or_none(Brand.id == int(brand))
     if brand is not None:
-        if current_user.is_authenticated:
-            return render_template('cocktails.html',
-                            cart=len(current_user.cart),
-                            cocktails=get_cocktails,
-                            func=get_brands,
-                            current_brand=brand,
-                            brands=user_system.select_brands(),
-                            colors=badge_colors
-            )
         return render_template('cocktails.html',
-                            cocktails=get_cocktails,
-                            func=get_brands,
+                            cocktails=my_system.get_cocktails,
+                            func=my_system.get_brands,
                             current_brand=brand,
-                            brands=user_system.select_brands(),
+                            brands=my_system.select_brands(),
                             colors=badge_colors
             )
-    return redirect("/")
+    return redirect(url_for('main'))
 
 
 @app.route("/cocktails")
@@ -204,7 +187,7 @@ def cocktails_main():
 def cocktail_details(cocktail_id):
     cocktail = Cocktail.get_or_none(Cocktail.id == int(cocktail_id))
     if cocktail is not None:
-        full_dict = user_system.cocktail_ingredients(cocktail.api_id)
+        full_dict = my_system.cocktail_ingredients(cocktail.api_id)
         ingredients_list = []
         measures_list = []
         for k, v in full_dict.items():
@@ -212,27 +195,20 @@ def cocktail_details(cocktail_id):
                 ingredients_list.append(v)
             elif k.startswith('strMeasure'):
                 measures_list.append(v)
-
-        if current_user.is_authenticated:
-            return render_template('cocktail.html',
-                            cart=len(current_user.cart),
-                            cocktail=full_dict,
-                            ingredients=list(zip(ingredients_list, measures_list)),
-                            colors=badge_colors
-            )
+        
         return render_template('cocktail.html',
                             cocktail=full_dict,
                             ingredients=list(zip(ingredients_list, measures_list)),
                             colors=badge_colors
         )
-    return redirect("/")
+    return redirect(url_for('main'))
 
 
 @app.route("/logout")
 @login_required
-def logout_of_system():
+def logout():
     logout_user()
-    return redirect('/')
+    return redirect(url_for('main'))
 
 
 if __name__ == '__main__':

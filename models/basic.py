@@ -1,8 +1,9 @@
-import requests
 import json
-from lxml import html
 import sqlite3
 from sqlite3 import Error
+
+import requests
+from lxml import html
 
 
 def get_popular_drinks():
@@ -12,7 +13,6 @@ def get_popular_drinks():
     alcohol = tree.xpath('//h3[@class="body-h3"]/text()')
     images = tree.xpath('//img[@class="lazyimage lazyload"]/@data-src')
 
-    #alcohol_dict = {'scotch': [], 'tequila': [], 'gin': [], 'rum': [], 'cognac': []}
     alcohol_list = []
     index = 0
     j = 0
@@ -51,73 +51,74 @@ def get_cocktail_ingredients(api_id):
     return response.json()['drinks'][0]
 
 
-def create_connection(db_file):
-    """ create a database connection to a SQLite database """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        print(sqlite3.version)
-    except Error as e:
-        print(e)
-    finally:
-        if conn:
-            conn.close()
+### Old Sqlite3 functions ###
+# def create_connection(db_file):
+#     """ create a database connection to a SQLite database """
+#     conn = None
+#     try:
+#         conn = sqlite3.connect(db_file)
+#         print(sqlite3.version)
+#     except Error as e:
+#         print(e)
+#     finally:
+#         if conn:
+#             conn.close()
 
 
-def run_sql_files(db_file, sql_file):
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    sql_file = open(sql_file)
-    sql_as_string = sql_file.read()
-    cursor.executescript(sql_as_string)
-    for row in cursor.execute("SELECT * FROM users"):
-        print(row)
+# def run_sql_files(db_file, sql_file):
+#     conn = sqlite3.connect(db_file)
+#     cursor = conn.cursor()
+#     sql_file = open(sql_file)
+#     sql_as_string = sql_file.read()
+#     cursor.executescript(sql_as_string)
+#     for row in cursor.execute("SELECT * FROM users"):
+#         print(row)
     
-    sql_file.close()
-    conn.close()
+#     sql_file.close()
+#     conn.close()
 
 
-def show_tables(db_file):
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    print(cursor.fetchall())
-    conn.close()
+# def show_tables(db_file):
+#     conn = sqlite3.connect(db_file)
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+#     print(cursor.fetchall())
+#     conn.close()
 
 
-def add_user(db_file, username, password, name, email):
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    try:
-        cursor.execute(f"INSERT INTO users (username, password, name, email) VALUES ('{username}', '{password}', '{name}', '{email}');")
-    except Error as e:
-        print(e)
-    else:
-        conn.commit()
-        print("Success")
+# def add_user(db_file, username, password, name, email):
+#     conn = sqlite3.connect(db_file)
+#     cursor = conn.cursor()
+#     try:
+#         cursor.execute(f"INSERT INTO users (username, password, name, email) VALUES ('{username}', '{password}', '{name}', '{email}');")
+#     except Error as e:
+#         print(e)
+#     else:
+#         conn.commit()
+#         print("Success")
     
-    conn.close()
+#     conn.close()
 
 
-def delete_user(db_file, username):
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    cursor.execute(f"DELETE FROM users WHERE username = '{username}';")
-    conn.commit()
-    conn.close()
+# def delete_user(db_file, username):
+#     conn = sqlite3.connect(db_file)
+#     cursor = conn.cursor()
+#     cursor.execute(f"DELETE FROM users WHERE username = '{username}';")
+#     conn.commit()
+#     conn.close()
 
 
-def select_all(db_file, table):
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM {table};")
-    rows = cursor.fetchall()
-    for row in rows:
-        print(row)
+# def select_all(db_file, table):
+#     conn = sqlite3.connect(db_file)
+#     cursor = conn.cursor()
+#     cursor.execute(f"SELECT * FROM {table};")
+#     rows = cursor.fetchall()
+#     for row in rows:
+#         print(row)
     
-    conn.close()
+#     conn.close()
 
-    return rows
+#     return rows
 
 
 # def add_popular_drinks(db_file):

@@ -62,10 +62,11 @@
                             </a>
                         </li>
                         {% else %}
-                        <li class="nav-item
+                        <li class="nav-item justify-content-start
                         {% if request.path == '/cart' %} active{% endif %}">
                             <a class="nav-link waves-effect" href="/cart">Closet
-                                {% if cart > 0 %} <span class="badge badge-danger">{{ cart }}</span>{% endif %}
+                                {% if current_user.cart|length > 0 %} <span
+                                    class="badge badge-danger">{{ current_user.cart|length }}</span>{% endif %}
                                 {% if request.path == "/cart" %}<span class="sr-only">(current)</span>{% endif %}
                             </a>
                         </li>
@@ -131,8 +132,9 @@
             </div>
             {% else %}
             <div>
-            <p>Looks like you have a lot on your mind, <strong>{{ current_user.full_name }}</strong>.<br>
-                Wanna drink about it?</p></div>
+                <p>Looks like you have a lot on your mind, <strong>{{ current_user.full_name }}</strong>.<br>
+                    Wanna drink about it?</p>
+            </div>
             {% endif %}
 
             </p>
@@ -142,54 +144,12 @@
     </div>
     <!-- Jumbotron -->
 
-
-
     <!--Main layout-->
     <main class="mt-5 pt-5">
         <div class="container">
-
-            <!--Section: Jumbotron-->
-            <!-- <section class="card wow fadeIn"> -->
-
-            <!-- Content -->
-            <!-- <div class="card-body spy-5 px-5 my-5">
-
-                    <h1 class="mb-4">
-                        <strong>My Liquor Closet</strong>
-                    </h1>
-                    <p>
-                        {% if not current_user.is_authenticated %}
-                    <form action="/login" method="POST">
-                        <ul style="list-style: none;" class="mb-4">
-                            <li class="row d-flex" style="padding-top: 1em;">
-                                <div>
-                                    <label for="username" style="display: inline-block; width: 80px; text-align: left;"
-                                        hidden>Username</label>
-                                    <input class="form-control mb-4" type="text" name="username" placeholder="Username"
-                                        value="" onfocus="this.value=''">
-                                    <label for="password" style="display: inline-block; width: 80px; text-align: left;"
-                                        hidden>Password</label>
-                                    <input class="form-control mb-4" type="password" name="password"
-                                        placeholder="Password" value="" onfocus="this.value=''">
-                                    <button type="submit" class="btn btn-light">Login</button>
-                                </div>
-                            </li>
-                        </ul>
-                    </form>
-                    {% else %}
-                    <div>Welcome <a href="/profile">{{ current_user.username }}</a> <a href="/cart">({{ cart }})</a> -
-                        <a href="/logout">Logout</a></div>
-                    {% endif %} -->
-            <!-- Content -->
-            <!-- </section> -->
             <div id="content">
                 <section class="text-center">{% block content %}{% endblock %}</section>
             </div>
-
-
-            <!--Section: Cards-->
-
-
         </div>
     </main>
     <!--Main layout-->
