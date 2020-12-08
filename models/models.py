@@ -1,4 +1,3 @@
-import os
 import time
 
 from flask_login import UserMixin
@@ -10,7 +9,7 @@ from .basic import get_cocktail_ingredients, get_cocktails, get_popular_drinks
 
 
 db = SqliteDatabase('mydb7.db')
-s_key = os.urandom(24)
+s_key = b'_5#y2L"F4Q8z\n\xec]/'
 badge_colors = ['default', 'primary', 'secondary', 'warning', 'info']
 
 
@@ -153,7 +152,7 @@ class MySystem:
             # print(f"The drink '{name}' has been deleted.")
             return True
     
-    
+
     # def add_cocktail(self, name, price, img):
     #     try:
     #         Cocktail.create(

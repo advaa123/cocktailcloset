@@ -12,7 +12,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 login_manager.session_protection = 'strong'
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.secret_key = s_key
 my_system = MySystem()
 
 
