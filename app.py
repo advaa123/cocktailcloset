@@ -16,15 +16,15 @@ app.secret_key = s_key
 my_system = MySystem()
 
 
-@app.before_request
-def _db_connect():
-    db.connect()
+# @app.before_request
+# def _db_connect():
+#     db.connect()
 
 
-@app.teardown_request
-def _db_close(_):
-    if not db.is_closed():
-        db.close()
+# @app.teardown_request
+# def _db_close(_):
+#     if not db.is_closed():
+#         db.close()
 
 
 @login_manager.user_loader
