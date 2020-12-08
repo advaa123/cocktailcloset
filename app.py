@@ -54,10 +54,7 @@ def login():
 
         if user is not None and user.check_password(password):
             login_user(user)
-            return render_template('index.html',
-                                drinks=my_system.select_drinks(),
-                                brands=my_system.select_brands(),
-                                colors=badge_colors)
+            return redirect(url_for('main'))
                                 
         return render_template('index.html',
                             drinks=my_system.select_drinks(),
@@ -66,11 +63,7 @@ def login():
                             error="Incorrect username or password"
                             )
 
-    return render_template('index.html',
-                            drinks=my_system.select_drinks(),
-                            brands=my_system.select_brands(),
-                            colors=badge_colors
-                            )
+    return redirect(url_for('main'))
 
 
 @app.route("/cart", methods=['GET', 'POST'])
@@ -114,36 +107,38 @@ def profile():
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
-    if request.method == "POST":
-        errors = []
+    if not current_user.is_authenticated:
+        if request.method == "POST":
+            errors = []
 
-        username = request.form.get('username')
-        user = User.get_or_none(User.username == username)
+            username = request.form.get('username')
+            user = User.get_or_none(User.username == username)
 
-        if len(username) == 0:
-            errors.append("Please enter a valid username.")
+            if len(username) == 0:
+                errors.append("Please enter a valid username.")
 
-        if user is not None:
-            errors.append(f"'{username}' already exists, please choose a different username.")
+            if user is not None:
+                errors.append(f"'{username}' already exists, please choose a different username.")
 
-        full_name = request.form.get('full_name')
-        if len(full_name) == 0:
-            errors.append('Please enter a valid full name.')
-        password = request.form.get('password')
-        if len(password) == 0:
-            errors.append('Please enter a longer password.')
-        email = request.form.get('email')
-        if len(email) == 0 or not '@' in email:
-            errors.append('Please enter a valid email address.')
+            full_name = request.form.get('full_name')
+            if len(full_name) == 0:
+                errors.append('Please enter a valid full name.')
+            password = request.form.get('password')
+            if len(password) == 0:
+                errors.append('Please enter a longer password.')
+            email = request.form.get('email')
+            if len(email) == 0 or not '@' in email:
+                errors.append('Please enter a valid email address.')
 
-        if len(errors) > 0:
-            return render_template('register.html', errors=errors)
+            if len(errors) > 0:
+                return render_template('register.html', errors=errors)
 
-        my_system.add_user(username, full_name, password, email)
-        login_user(User.get(User.username == username), force=True)
-        return redirect(url_for('main'))
-    
-    return render_template('register.html')
+            my_system.add_user(username, full_name, password, email)
+            login_user(User.get(User.username == username), force=True)
+            return redirect(url_for('main'))
+        
+        return render_template('register.html')
+    return redirect(url_for('main'))
 
 
 @app.route("/add/<drink>", methods=['GET', 'POST'])
